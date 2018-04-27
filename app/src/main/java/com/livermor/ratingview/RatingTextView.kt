@@ -5,6 +5,7 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.util.TypedValue
 import android.view.Gravity
@@ -14,8 +15,8 @@ import android.view.Gravity
  *
  * @author dumchev on 26.04.2018.
  */
-class RatingTextView(context: Context, attrs: AttributeSet?) :
-        android.support.v7.widget.AppCompatTextView(context, attrs) {
+class RatingTextView @JvmOverloads constructor(context: Context, attrs: AttributeSet? = null) :
+        AppCompatTextView(context, attrs) {
 
     // params
     private var diameter: Int = 0
