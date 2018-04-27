@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="RatingTextView">
+        <attr name="diameter" format="dimension"/>
+        <attr name="arcWidth" format="dimension"/>
+        <attr name="rate" format="float"/>
+        <attr name="useRatingAsText" format="boolean"/>
+        <attr name="fillColor" format="color"/>
+    </declare-styleable>
+</resources>
