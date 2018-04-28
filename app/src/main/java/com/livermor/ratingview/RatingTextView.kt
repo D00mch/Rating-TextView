@@ -25,7 +25,7 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
     private var shouldOverrideText: Boolean = false
     private var fillColor: Int = 0
 
-    private val circlePaint: Paint by lazy { Paint(Paint.ANTI_ALIAS_FLAG).apply { color = fillColor } }
+    private val circlePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
     // radius
     private var baseRadius: Int = 0
@@ -58,6 +58,7 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
         } finally {
             a.recycle()
         }
+        circlePaint.color = fillColor
         onRatingChanged(rating)
         gravity = Gravity.CENTER
     }
@@ -120,11 +121,12 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     private fun onRatingChanged(rating: Float) {
-        if (shouldOverrideText) text = rating.toString().substring(0, 3)
+        if (shouldOverrideText) text = RATING_FORMAT.format(rating)
     }
 
 
     companion object {
+        const val RATING_FORMAT = "%.1f"
         const val RED_MAX = 2.5f
         const val YELLOW_MAX = 3.5f
         const val MAX_RATING = 5f
