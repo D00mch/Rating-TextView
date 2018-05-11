@@ -14,11 +14,10 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
 
-        android:text=""
         android:textColor="@android:color/white"
         android:textSize="14sp"
 
-        app:arcWidth="2dp"
+        app:arcWidth="2.4dp"
         app:diameter="40dp"
         app:fillColor="@color/common_back_black_30percent"
         app:rate="4"

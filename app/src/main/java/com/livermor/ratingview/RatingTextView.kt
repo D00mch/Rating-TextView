@@ -7,11 +7,12 @@ import android.graphics.Path
 import android.graphics.RectF
 import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
+import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
 
 /**
- * This view ignores padding, sorry for that, have now time to implement
+ * This view ignores padding, sorry for that, have no time to implement
  *
  * @author dumchev on 26.04.2018.
  */
@@ -22,8 +23,8 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
     private var diameter: Int = 0
     private var arcWidth = 10f
     private var rating: Float = 0f
-    private var shouldOverrideText: Boolean = false
     private var fillColor: Int = 0
+    var shouldOverrideText: Boolean = false
 
     private val circlePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -59,19 +60,21 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
             a.recycle()
         }
         circlePaint.color = fillColor
-        onRatingChanged(rating)
+        setUpText(rating)
         gravity = Gravity.CENTER
     }
 
     fun setRating(rating: Float) {
         require(rating in 0..MAX_RATING.toInt()) { "Rating must be in range [0, 5]" }
+        this.rating = rating
         arcPaint.color = getProgressColor(rating)
-        onRatingChanged(rating)
+        setUpText(rating)
+        measureArcs()
         invalidate()
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minW = diameter
+        val minW = (diameter + arcWidth / 2).toInt()
         val w = resolveSizeAndState(minW, widthMeasureSpec, 1)
         val h = resolveSizeAndState(minW, heightMeasureSpec, 0)
         xCenter = MeasureSpec.getSize(w) / 2 + paddingLeft
@@ -80,21 +83,34 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
         // arc
         baseRadius = diameter / 2
         arcRadius = Math.round((diameter - arcWidth) / 2)
-        val sweepAngle = Math.round(DEGREES_360 * rating / MAX_RATING)
-
-        measureArc(arcOval, arcPath, START_ANGLE, sweepAngle.toFloat())
-        measureArc(strokeOval, strokePath, START_ANGLE, sweepAngle - DEGREES_360)
+        measureArcs()
 
         setMeasuredDimension(w, h)
     }
 
     override fun onDraw(canvas: Canvas) = with(canvas) {
+        Log.w(tag_, "onDraw")
         drawCircle(xCenter.toFloat(), yCenter.toFloat(), baseRadius.toFloat(), circlePaint)
         drawPath(strokePath, strokePaint)
         drawPath(arcPath, arcPaint)
         super.onDraw(canvas)
     }
 
+
+    private fun measureArcs() {
+        val sweepAngle = Math.round(DEGREES_360 * rating / MAX_RATING)
+
+        Log.w(tag_, "onMeasure, sweepAngle = $sweepAngle")
+        measureArc(arcOval, arcPath, START_ANGLE, sweepAngle.toFloat())
+        measureArc(strokeOval, strokePath, START_ANGLE, sweepAngle - DEGREES_360)
+    }
+
+    private fun measureArc(oval: RectF, arcPath: Path, startAngle: Float, sweepAngle: Float) {
+        oval.set((xCenter - arcRadius).toFloat(), (yCenter - arcRadius).toFloat(),
+                (xCenter + arcRadius).toFloat(), (yCenter + arcRadius).toFloat())
+        arcPath.reset()
+        arcPath.addArc(arcOval, startAngle, sweepAngle)
+    }
 
     private fun getProgressColor(rating: Float): Int = context.resources.getColor(when {
         rating <= RED_MAX -> R.color.common_red_new
@@ -108,24 +124,19 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
         style = Paint.Style.STROKE
     }
 
-    private fun measureArc(oval: RectF, arcPath: Path, startAngle: Float, sweepAngle: Float) {
-        oval.set((xCenter - arcRadius).toFloat(), (yCenter - arcRadius).toFloat(),
-                (xCenter + arcRadius).toFloat(), (yCenter + arcRadius).toFloat())
-        arcPath.addArc(arcOval, startAngle, sweepAngle)
-    }
-
     private fun toPixels(dp: Float): Int {
         val metrics = context.resources.displayMetrics
         val pixels = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, metrics)
         return Math.round(pixels)
     }
 
-    private fun onRatingChanged(rating: Float) {
+    private fun setUpText(rating: Float) {
         if (shouldOverrideText) text = RATING_FORMAT.format(rating)
     }
 
 
     companion object {
+        private val tag_ = RatingTextView::class.java.simpleName
         const val RATING_FORMAT = "%.1f"
         const val RED_MAX = 2.5f
         const val YELLOW_MAX = 3.5f
