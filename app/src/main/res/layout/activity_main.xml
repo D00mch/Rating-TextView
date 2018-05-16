@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:textColor="@android:color/white"
-        android:textSize="10sp"
+        android:textSize="16sp"
 
         app:arcWidth="@dimen/arcWidth"
         app:diameter="@dimen/diameter"
@@ -24,29 +24,11 @@
         app:useRatingAsText="true"/>
 
     <com.livermor.ratingview.RatingTextView
-        android:id="@+id/circularTextView2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="10dp"
-
-        android:text="Bad"
-        android:textColor="@android:color/black"
-        android:textSize="22sp"
-
-        app:arcWidth="15dp"
-        app:diameter="100dp"
-        app:fillColor="@android:color/white"
-        app:rate="2.3"
-        app:useRatingAsText="false"
-        tools:layout_editor_absoluteX="58dp"
-        tools:layout_editor_absoluteY="0dp"/>
-
-    <com.livermor.ratingview.RatingTextView
         android:id="@+id/circularTextView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-
+        android:text="Half"
         android:textColor="@android:color/black"
         android:textSize="22sp"
 
