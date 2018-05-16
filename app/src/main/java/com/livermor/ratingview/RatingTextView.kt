@@ -5,11 +5,13 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Path
 import android.graphics.RectF
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
 import android.util.Log
 import android.util.TypedValue
 import android.view.Gravity
+import java.util.*
 
 /**
  * This view ignores padding, sorry for that, have no time to implement
@@ -20,11 +22,33 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
         AppCompatTextView(context, attrs) {
 
     // params
-    private var diameter: Int = 0
-    private var arcWidth = 10f
-    private var rating: Float = 0f
-    private var fillColor: Int = 0
+    var diameter: Int = 0
+    var arcWidth = 10
+        set(value) {
+            field = value
+            arcPaint.strokeWidth = arcWidth.toFloat()
+            strokePaint.strokeWidth = arcWidth.toFloat()
+        }
+    var fillColor: Int = ContextCompat.getColor(context, R.color.common_back_black_30percent)
+        set(value) {
+            field = value
+            circlePaint.color = value
+        }
+    var backStrokeColor: Int = ContextCompat.getColor(context, R.color.common_back_black_20percent)
+        set(value) {
+            field = value
+            strokePaint.color = value
+        }
     var shouldOverrideText: Boolean = false
+    var rating: Float = 0f
+        set(value) {
+            require(value in 0..MAX_RATING.toInt()) { "Rating must be in range [0, 5]" }
+            field = value
+            arcPaint.color = getProgressColor(rating)
+            setUpText(rating)
+            measureArcs()
+            invalidate()
+        }
 
     private val circlePaint: Paint = Paint(Paint.ANTI_ALIAS_FLAG)
 
@@ -50,31 +74,24 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
         val a = context.theme.obtainStyledAttributes(attrs, R.styleable.RatingTextView, 0, 0)
         try {
             diameter = a.getDimensionPixelOffset(R.styleable.RatingTextView_diameter, 0)
-            arcWidth = a.getDimensionPixelOffset(R.styleable.RatingTextView_arcWidth, toPixels(2f)).toFloat()
+            arcWidth = a.getDimensionPixelOffset(R.styleable.RatingTextView_arcWidth, toPixels(2f))
             rating = a.getFloat(R.styleable.RatingTextView_rate, 0f)
             shouldOverrideText = a.getBoolean(R.styleable.RatingTextView_useRatingAsText, true)
             fillColor = a.getColor(
                     R.styleable.RatingTextView_fillColor,
-                    context.resources.getColor(R.color.common_back_black_30percent))
+                    ContextCompat.getColor(context, R.color.common_back_black_30percent))
+            backStrokeColor = a.getColor(
+                    R.styleable.RatingTextView_backStrokeColor,
+                    ContextCompat.getColor(context, R.color.common_back_black_20percent))
         } finally {
             a.recycle()
         }
-        circlePaint.color = fillColor
         setUpText(rating)
         gravity = Gravity.CENTER
     }
 
-    fun setRating(rating: Float) {
-        require(rating in 0..MAX_RATING.toInt()) { "Rating must be in range [0, 5]" }
-        this.rating = rating
-        arcPaint.color = getProgressColor(rating)
-        setUpText(rating)
-        measureArcs()
-        invalidate()
-    }
-
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val minW = (diameter + arcWidth / 2).toInt()
+        val minW = diameter + arcWidth / 2
         val w = resolveSizeAndState(minW, widthMeasureSpec, 1)
         val h = resolveSizeAndState(minW, heightMeasureSpec, 0)
         xCenter = MeasureSpec.getSize(w) / 2 + paddingLeft
@@ -82,7 +99,7 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
 
         // arc
         baseRadius = diameter / 2
-        arcRadius = Math.round((diameter - arcWidth) / 2)
+        arcRadius = Math.round((diameter - arcWidth) / 2.0).toInt()
         measureArcs()
 
         setMeasuredDimension(w, h)
@@ -120,7 +137,6 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
 
     private fun createArcPaint(color: Int): Paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         this.color = color
-        strokeWidth = arcWidth
         style = Paint.Style.STROKE
     }
 
@@ -131,7 +147,7 @@ class RatingTextView @JvmOverloads constructor(context: Context, attrs: Attribut
     }
 
     private fun setUpText(rating: Float) {
-        if (shouldOverrideText) text = RATING_FORMAT.format(rating)
+        if (shouldOverrideText) text = RATING_FORMAT.format(Locale.US, rating)
     }
 
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
+    android:id="@+id/llRoot"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,12 +14,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-
         android:textColor="@android:color/white"
-        android:textSize="14sp"
+        android:textSize="10sp"
 
-        app:arcWidth="2.4dp"
-        app:diameter="40dp"
+        app:arcWidth="@dimen/arcWidth"
+        app:diameter="@dimen/diameter"
         app:fillColor="@color/common_back_black_30percent"
         app:rate="4"
         app:useRatingAsText="true"/>
@@ -38,6 +38,24 @@
         app:fillColor="@android:color/white"
         app:rate="2.3"
         app:useRatingAsText="false"
+        tools:layout_editor_absoluteX="58dp"
+        tools:layout_editor_absoluteY="0dp"/>
+
+    <com.livermor.ratingview.RatingTextView
+        android:id="@+id/circularTextView3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+
+        android:textColor="@android:color/black"
+        android:textSize="22sp"
+
+        app:arcWidth="15dp"
+        app:diameter="100dp"
+        app:fillColor="@android:color/white"
+        app:rate="2.3"
+        app:useRatingAsText="false"
+        app:backStrokeColor="@color/common_green_light"
         tools:layout_editor_absoluteX="58dp"
         tools:layout_editor_absoluteY="0dp"/>
 

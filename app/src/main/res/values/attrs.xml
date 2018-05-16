@@ -6,5 +6,6 @@
         <attr name="rate" format="float"/>
         <attr name="useRatingAsText" format="boolean"/>
         <attr name="fillColor" format="color"/>
+        <attr name="backStrokeColor" format="color"/>
     </declare-styleable>
 </resources>
